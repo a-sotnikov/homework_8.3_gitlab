@@ -77,4 +77,42 @@ build_manual:
 >
 > В качестве ответа добавьте в шаблон с решением файл gitlab-ci.yml своего проекта или вставьте код в соответсвующее поле в шаблоне.
 
-Ответ
+``` yaml
+
+test_go:
+  image: golang:1.17
+  rules:
+  - changes:
+    - "*.go"
+  script:
+   - go test .
+
+test_sonarqube:
+  image:
+    name: sonarsource/sonar-scanner-cli
+    entrypoint: [""]
+  rules:
+  - changes:
+    - "*.go"
+  variables:
+    SQ_PROJECT: netology-hw
+    SQ_HOST: http://51.250.108.111:9000
+  script:
+    - sonar-scanner -Dsonar.projectKey=$SQ_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SQ_HOST -Dsonar.login=$SQ_TOKEN
+
+build_auto:
+  only:
+    - main
+  image: docker:23
+  script:
+   - docker build .
+
+build_manual:
+  when: manual
+  except:
+    - main
+  image: docker:23
+  script:
+    - docker build .
+
+```
