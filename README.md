@@ -10,7 +10,7 @@
 >
 > В качестве ответа в репозиторий шаблона с решением добавьте скриншоты с настройками раннера в проекте.  
 
-Ответ
+![Screenshot](img/runner_settings.png)
 
 ---
 
@@ -19,12 +19,52 @@
 > 1. Запушьте [репозиторий](https://github.com/netology-code/sdvps-materials/tree/main/gitlab) на GitLab, изменив origin. Это изучалось на занятии по Git.
 > 2. Создайте .gitlab-ci.yml, описав в нём все необходимые, на ваш взгляд, этапы.
 >
-> В качестве ответа в шаблон с решением добавьте: 
+> В качестве ответа в шаблон с решением добавьте:
 >
-> * файл gitlab-ci.yml для своего проекта или вставьте код в соответствующее поле в шаблоне; 
+> * файл gitlab-ci.yml для своего проекта или вставьте код в соответствующее поле в шаблоне;
 > * скриншоты с успешно собранными сборками.
 
-Ответ
+``` yaml
+stages:
+  - test
+  - build
+
+test_go:
+  stage: test
+  image: golang:1.17
+  script:
+   - go test .
+
+test_sonarqube:
+  stage: test
+  image:
+    name: sonarsource/sonar-scanner-cli
+    entrypoint: [""]
+  variables:
+    SQ_PROJECT: netology-hw
+    SQ_HOST: http://51.250.108.111:9000
+  script:
+    - sonar-scanner -Dsonar.projectKey=$SQ_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SQ_HOST -Dsonar.login=$SQ_TOKEN
+
+build_auto:
+  stage: build
+  only:
+    - main
+  image: docker:23
+  script:
+   - docker build .
+
+build_manual:
+  stage: build
+  when: manual
+  except:
+    - main
+  image: docker:23
+  script:
+    - docker build .
+```
+
+![JobsPassed](img/pipeline.png)
 
 ---
 
