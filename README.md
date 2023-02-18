@@ -101,9 +101,9 @@ test_sonarqube:
     - sonar-scanner -Dsonar.projectKey=$SQ_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SQ_HOST -Dsonar.login=$SQ_TOKEN
 
 build_auto:
-  only:
-    - main
   image: docker:23
+  only:
+   - main
   script:
    - docker build .
 
